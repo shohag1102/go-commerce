@@ -24,35 +24,6 @@ func helloHandler(w http.ResponseWriter, r *http.Request) {
 
 var productList []Product
 
-func getProducts(w http.ResponseWriter, r *http.Request) {
-	handleCors(w)
-	handlePreflightRequest(w, r)
-
-	sendData(w, productList, 200)
-}
-
-func createProduct(w http.ResponseWriter, r *http.Request) {
-	handleCors(w)
-	handlePreflightRequest(w, r)
-
-	var newProduct Product
-
-	decoder := json.NewDecoder(r.Body)
-
-	err := decoder.Decode(&newProduct)
-	if err != nil {
-		fmt.Println("error", err)
-		http.Error(w, "Plz give valid json", 400)
-		return
-	}
-
-	newProduct.ID = len(productList) + 1
-
-	productList = append(productList, newProduct)
-
-	sendData(w, newProduct, 201)
-}
-
 func handleCors(w http.ResponseWriter) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS")
@@ -75,12 +46,51 @@ func sendData(w http.ResponseWriter, data interface{}, statusCode int) {
 	encoder.Encode(data)
 }
 
+func getProducts(w http.ResponseWriter, r *http.Request) {
+	handleCors(w)
+
+	if r.Method == "OPTIONS" {
+		w.WriteHeader(200)
+		return
+	}
+
+	sendData(w, productList, 200)
+}
+
+func createProduct(w http.ResponseWriter, r *http.Request) {
+	handleCors(w)
+
+	if r.Method == "OPTIONS" {
+		w.WriteHeader(200)
+		return
+	}
+
+	var newProduct Product
+
+	decoder := json.NewDecoder(r.Body)
+
+	err := decoder.Decode(&newProduct)
+	if err != nil {
+		fmt.Println("error", err)
+		http.Error(w, "Plz give valid json", 400)
+		return
+	}
+
+	newProduct.ID = len(productList) + 1
+
+	productList = append(productList, newProduct)
+
+	sendData(w, newProduct, 201)
+}
+
 func main() {
 	mux := http.NewServeMux() // router
 	mux.Handle("GET /hello", http.HandlerFunc(helloHandler))
 	mux.Handle("GET /about", http.HandlerFunc(aboutHandler))
 	mux.Handle("GET /products", http.HandlerFunc(getProducts))
+	mux.Handle("OPTIONS /products", http.HandlerFunc(getProducts))
 	mux.Handle("POST /create-products", http.HandlerFunc(createProduct))
+	mux.Handle("OPTIONS /create-products", http.HandlerFunc(createProduct))
 
 	fmt.Println("Server is running on port: 8080")
 
