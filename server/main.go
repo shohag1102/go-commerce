@@ -28,22 +28,12 @@ func getProducts(w http.ResponseWriter, r *http.Request) {
 	handleCors(w)
 	handlePreflightRequest(w, r)
 
-	if r.Method != http.MethodGet {
-		http.Error(w, "Please use right method", 400)
-		return
-	}
-
 	sendData(w, productList, 200)
 }
 
 func createProduct(w http.ResponseWriter, r *http.Request) {
 	handleCors(w)
 	handlePreflightRequest(w, r)
-
-	if r.Method != "POST" {
-		http.Error(w, "Please use right method", 400)
-		return
-	}
 
 	var newProduct Product
 
@@ -87,10 +77,10 @@ func sendData(w http.ResponseWriter, data interface{}, statusCode int) {
 
 func main() {
 	mux := http.NewServeMux() // router
-	mux.HandleFunc("/hello", helloHandler)
-	mux.HandleFunc("/about", aboutHandler)
-	mux.HandleFunc("/products", getProducts)
-	mux.HandleFunc("/create-products", createProduct)
+	mux.Handle("GET /hello", http.HandlerFunc(helloHandler))
+	mux.Handle("GET /about", http.HandlerFunc(aboutHandler))
+	mux.Handle("GET /products", http.HandlerFunc(getProducts))
+	mux.Handle("POST /create-products", http.HandlerFunc(createProduct))
 
 	fmt.Println("Server is running on port: 8080")
 
