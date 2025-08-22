@@ -14,29 +14,7 @@ type Product struct {
 	ImgURL      string `json:"imageUrl"`
 }
 
-func aboutHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "about page")
-}
-
-func helloHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Hello world")
-}
-
 var productList []Product
-
-func handleCors(w http.ResponseWriter) {
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, habib")
-	w.Header().Set("Content-Type", "application/json")
-}
-
-func handlePreflightRequest(w http.ResponseWriter, r *http.Request) {
-	if r.Method == "OPTIONS" {
-		w.WriteHeader(200)
-		return
-	}
-}
 
 func sendData(w http.ResponseWriter, data interface{}, statusCode int) {
 	w.WriteHeader(statusCode)
@@ -47,23 +25,10 @@ func sendData(w http.ResponseWriter, data interface{}, statusCode int) {
 }
 
 func getProducts(w http.ResponseWriter, r *http.Request) {
-	handleCors(w)
-
-	if r.Method == "OPTIONS" {
-		w.WriteHeader(200)
-		return
-	}
-
 	sendData(w, productList, 200)
 }
 
 func createProduct(w http.ResponseWriter, r *http.Request) {
-	handleCors(w)
-
-	if r.Method == "OPTIONS" {
-		w.WriteHeader(200)
-		return
-	}
 
 	var newProduct Product
 
@@ -82,19 +47,36 @@ func createProduct(w http.ResponseWriter, r *http.Request) {
 
 	sendData(w, newProduct, 201)
 }
+func globalRouter(mux *http.ServeMux) http.HandlerFunc {
+	handleAllReq := func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, habib")
+		w.Header().Set("Content-Type", "application/json")
+
+		if r.Method == "OPTIONS" {
+			w.WriteHeader(200)
+			return
+		}
+
+		mux.ServeHTTP(w, r)
+
+	}
+	return http.HandlerFunc(handleAllReq)
+}
 
 func main() {
 	mux := http.NewServeMux() // router
-	mux.Handle("GET /hello", http.HandlerFunc(helloHandler))
-	mux.Handle("GET /about", http.HandlerFunc(aboutHandler))
+
 	mux.Handle("GET /products", http.HandlerFunc(getProducts))
-	mux.Handle("OPTIONS /products", http.HandlerFunc(getProducts))
+
 	mux.Handle("POST /create-products", http.HandlerFunc(createProduct))
-	mux.Handle("OPTIONS /create-products", http.HandlerFunc(createProduct))
+
+	globalRouter := globalRouter(mux)
 
 	fmt.Println("Server is running on port: 8080")
 
-	err := http.ListenAndServe(":8080", mux)
+	err := http.ListenAndServe(":8080", globalRouter)
 
 	if err != nil {
 		fmt.Println("Error starting the server, ", err)
