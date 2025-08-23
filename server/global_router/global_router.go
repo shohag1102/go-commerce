@@ -1,8 +1,8 @@
-package main
+package global_router
 
 import "net/http"
 
-func globalRouter(mux *http.ServeMux) http.HandlerFunc {
+func GlobalRouter(mux *http.ServeMux) http.HandlerFunc {
 	handleAllReq := func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS")
