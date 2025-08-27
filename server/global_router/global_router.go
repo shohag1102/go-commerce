@@ -1,6 +1,8 @@
 package global_router
 
-import "net/http"
+import (
+	"net/http"
+)
 
 func GlobalRouter(mux *http.ServeMux) http.HandlerFunc {
 	handleAllReq := func(w http.ResponseWriter, r *http.Request) {
@@ -14,6 +16,7 @@ func GlobalRouter(mux *http.ServeMux) http.HandlerFunc {
 			return
 		}
 
+		// Call actual mux
 		mux.ServeHTTP(w, r)
 
 	}
