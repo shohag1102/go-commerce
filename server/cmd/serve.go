@@ -13,23 +13,39 @@ func Serve() {
 
 	manager := middleware.NewManager()
 
-	mux.Handle("GET /test", manager.With((http.HandlerFunc(handlers.Test)),
+	manager.Use(
 		middleware.Logger,
 		middleware.Hudai,
-	))
+	)
 
-	mux.Handle("GET /products", manager.With((http.HandlerFunc(handlers.GetProducts)),
-		middleware.Logger,
-		middleware.Hudai,
-	))
-	mux.Handle("POST /products", manager.With((http.HandlerFunc(handlers.CreateProduct)),
-		middleware.Logger,
-		middleware.Hudai,
-	))
-	mux.Handle("GET /products/{id}", manager.With((http.HandlerFunc(handlers.GetProductById)),
-		middleware.Logger,
-		middleware.Hudai,
-	))
+	mux.Handle(
+		"GET /test",
+		manager.With(
+			http.HandlerFunc(handlers.Test),
+			middleware.Arekta,
+		),
+	)
+
+	mux.Handle(
+		"GET /products",
+		manager.With(
+			http.HandlerFunc(handlers.GetProducts),
+		),
+	)
+
+	mux.Handle(
+		"POST /products",
+		manager.With(
+			http.HandlerFunc(handlers.CreateProduct),
+		),
+	)
+
+	mux.Handle(
+		"GET /products/{id}",
+		manager.With(
+			http.HandlerFunc(handlers.GetProductById),
+		),
+	)
 
 	globalRouter := global_router.GlobalRouter(mux)
 
