@@ -11,23 +11,25 @@ import (
 func Serve() {
 	mux := http.NewServeMux() // router
 
-	// mux.Handle("GET /products", http.HandlerFunc(handlers.GetProducts))
 	manager := middleware.NewManager()
 
-	mux.Handle("GET /test", manager.With(middleware.Hudai, middleware.Logger)(http.HandlerFunc(handlers.Test)))
-	
-	mux.Handle("GET /products", manager.With(
-		middleware.Hudai, 
+	mux.Handle("GET /test", manager.With((http.HandlerFunc(handlers.Test)),
 		middleware.Logger,
-		)(http.HandlerFunc(handlers.GetProducts)))
+		middleware.Hudai,
+	))
 
-	// mux.Handle("GET /test", middleware.Hudai(middleware.Logger(http.HandlerFunc(handlers.Test))))
-
-	// mux.Handle("GET /products", middleware.Hudai(middleware.Logger(http.HandlerFunc(handlers.GetProducts))))
-
-	mux.Handle("POST /products", middleware.Hudai(middleware.Logger(http.HandlerFunc(handlers.CreateProduct))))
-
-	mux.Handle("GET /products/{id}", middleware.Hudai(middleware.Logger(http.HandlerFunc(handlers.GetProductById))))
+	mux.Handle("GET /products", manager.With((http.HandlerFunc(handlers.GetProducts)),
+		middleware.Logger,
+		middleware.Hudai,
+	))
+	mux.Handle("POST /products", manager.With((http.HandlerFunc(handlers.CreateProduct)),
+		middleware.Logger,
+		middleware.Hudai,
+	))
+	mux.Handle("GET /products/{id}", manager.With((http.HandlerFunc(handlers.GetProductById)),
+		middleware.Logger,
+		middleware.Hudai,
+	))
 
 	globalRouter := global_router.GlobalRouter(mux)
 
