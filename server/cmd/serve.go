@@ -3,7 +3,6 @@ package cmd
 import (
 	"fmt"
 	"net/http"
-	"shohag/github.com/global_router"
 	"shohag/github.com/middleware"
 )
 
@@ -12,18 +11,18 @@ func Serve() {
 
 	manager := middleware.NewManager()
 
-	manager.Use(
+	wrappedMux := manager.WrappedMux(
+		mux,
 		middleware.Logger,
 		middleware.Hudai,
+		middleware.CorsWithPreflight,
 	)
 
 	initRoutes(mux, manager)
 
-	globalRouter := global_router.GlobalRouter(mux)
-
 	fmt.Println("Server is running on port: 8080")
 
-	err := http.ListenAndServe(":8080", globalRouter)
+	err := http.ListenAndServe(":8080", wrappedMux)
 
 	if err != nil {
 		fmt.Println("Error starting the server, ", err)
