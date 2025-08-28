@@ -30,10 +30,10 @@ func (mngr *Manager) With(handler http.Handler, middlewares ...Middleware) http.
 	return n
 }
 
-func (mngr *Manager) WrappedMux(middlewares []Middleware, handler http.Handler) http.Handler {
+func (mngr *Manager) WrappedMux(handler http.Handler) http.Handler {
 	n := handler
 
-	for _, middmiddleware := range middlewares {
+	for _, middmiddleware := range mngr.globalMiddlewares {
 		n = middmiddleware(n)
 	}
 

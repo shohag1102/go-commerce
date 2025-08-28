@@ -11,7 +11,7 @@ func initRoutes(mux *http.ServeMux, manager *middleware.Manager) {
 		"GET /test",
 		manager.With(
 			http.HandlerFunc(handlers.Test),
-			middleware.Arekta,
+			middleware.Test,
 		),
 	)
 
