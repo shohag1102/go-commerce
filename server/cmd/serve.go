@@ -11,11 +11,18 @@ func Serve() {
 
 	manager := middleware.NewManager()
 
-	wrappedMux := manager.WrappedMux(
-		mux,
-		middleware.Logger,
-		middleware.Hudai,
+	// wrappedMux := manager.WrappedMux(
+	// 	mux,
+	// 	middleware.Logger,
+	// 	middleware.Hudai,
+	// 	middleware.CorsWithPreflight,
+	// )
+
+	wrappedMux := manager.WrappedMux([]middleware.Middleware{
 		middleware.CorsWithPreflight,
+		middleware.Hudai,
+		middleware.Logger,
+	}, mux,
 	)
 
 	initRoutes(mux, manager)

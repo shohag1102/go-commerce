@@ -1,13 +1,14 @@
 package middleware
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 )
 
 func CorsWithPreflight(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		log.Println("ami cors with preflight")
+		log.Println("ami cors with preflight start")
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS")
 		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, habib")
@@ -20,5 +21,7 @@ func CorsWithPreflight(next http.Handler) http.Handler {
 
 		// Call actual routes
 		next.ServeHTTP(w, r)
+
+		fmt.Println("cors er kaj ses")
 	})
 }
