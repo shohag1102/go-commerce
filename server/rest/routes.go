@@ -1,9 +1,9 @@
-package cmd
+package rest
 
 import (
 	"net/http"
-	"shohag/github.com/handlers"
-	"shohag/github.com/middleware"
+	"shohag/github.com/rest/handlers"
+	"shohag/github.com/rest/middleware"
 )
 
 func initRoutes(mux *http.ServeMux, manager *middleware.Manager) {

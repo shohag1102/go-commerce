@@ -1,6 +1,6 @@
 package database
 
-var ProductList []Product
+var productList []Product
 
 type Product struct {
 	ID          int    `json:"id"`
@@ -10,7 +10,48 @@ type Product struct {
 	ImgURL      string `json:"imageUrl"`
 }
 
+
+func Store(p Product) Product {
+	p.ID = len(productList) + 1
+
+	productList = append(productList, p)
+	return p
+}
+
+func Get(productId int) *Product {
+	
+	for _, product := range productList {
+		if product.ID == productId {
+			return &product
+		}
+	}
+	return nil
+}
+
+func Update(product Product) {
+	for idx, p := range productList {
+		if p.ID == product.ID {
+			productList[idx] = product
+		}
+	}
+}
+
+func Delete(productId int) {
+	var tempList []Product
+	for _, p := range productList {
+		if p.ID != productId {
+			tempList = append(tempList, p)
+		}
+	}
+	productList = tempList
+}
+
+func List() []Product {
+	return productList
+}
+
 func init() {
+
 	prod1 := Product{
 		ID: 1, Title: "Wireless Headphones", Description: "High-quality noise-cancelling headphones.", Price: "129.99", ImgURL: "https://www.lovefoodhatewaste.com/sites/default/files/styles/twitter_card_image/public/2022-07/Citrus%20fruits.jpg.webp?itok=H1j9CCCS",
 	}
@@ -34,7 +75,7 @@ func init() {
 	}
 
 	// productList = append(productList, prod1, prod2, prod3, prod4, prod5, prod6)
-	ProductList = append(ProductList, prod1, prod2, prod3, prod4, prod5, prod6)
+	productList = append(productList, prod1, prod2, prod3, prod4, prod5, prod6)
 	// fmt.Println("products", productList)
 
 }
