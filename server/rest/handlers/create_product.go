@@ -15,6 +15,7 @@ func CreateProduct(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
 
 	err := decoder.Decode(&newProduct)
+	
 	if err != nil {
 		fmt.Println("error", err)
 		http.Error(w, "Plz give valid json", 400)
